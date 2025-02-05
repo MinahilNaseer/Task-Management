@@ -121,8 +121,24 @@
   .tasks-list {
     max-height: 300px; 
     overflow-y: auto; 
-    margin-top: 1rem;
+    padding-right: 1rem; 
+    scrollbar-width: thin; 
   }
+  
+  
+  .tasks-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .tasks-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+  
+  .tasks-list::-webkit-scrollbar-thumb:hover {
+    background: #999;
+  }
+  
   
   .task-item {
     display: flex;

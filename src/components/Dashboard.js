@@ -1,128 +1,155 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { addTask, updateTask, deleteTask } from "../reducers/tasksSlice";
-
-import "./LandingPage.css";
+import {
+    fetchTasks,
+    addTaskAPI,
+    updateTaskAPI,
+    deleteTaskAPI,
+} from "../reducers/tasksSlice";
 import "./Dashboard.css";
 
 function Dashboard() {
-  const tasks = useSelector((state) => state.tasks.items);
-  const dispatch = useDispatch();
+    const tasks = useSelector((state) => state.tasks.items);
+    const loading = useSelector((state) => state.tasks.loading);
+    const error = useSelector((state) => state.tasks.error);
 
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  const [overlayType, setOverlayType] = useState(""); 
-  const [taskToEdit, setTaskToEdit] = useState(null);
-  const [taskName, setTaskName] = useState("");
-  const [taskStatus, setTaskStatus] = useState("");
+    const dispatch = useDispatch();
 
-  const handleAddTask = () => {
-    setOverlayType("add");
-    setTaskName("");
-    setTaskStatus("");
-    setIsOverlayOpen(true);
-  };
+    const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+    const [overlayType, setOverlayType] = useState(""); 
+    const [taskToEdit, setTaskToEdit] = useState(null);
+    const [taskTitle, setTaskTitle] = useState("");
+    const [taskCompleted, setTaskCompleted] = useState(false);
 
-  const handleUpdateTask = (task) => {
-    setOverlayType("update");
-    setTaskToEdit(task);
-    setTaskName(task.name);
-    setTaskStatus(task.status);
-    setIsOverlayOpen(true);
-  };
+    useEffect(() => {
+        dispatch(fetchTasks());
+    }, [dispatch]);
 
-  const handleSaveTask = () => {
-    if (overlayType === "add") {
-      const newTask = {
-        id: tasks.length + 1, 
-        name: taskName,
-        status: taskStatus,
-      };
-      dispatch(addTask(newTask));
-    } else if (overlayType === "update") {
-      const updatedTask = {
-        ...taskToEdit,
-        name: taskName,
-        status: taskStatus,
-      };
-      dispatch(updateTask(updatedTask));
-    }
-    setIsOverlayOpen(false);
-  };
+    const displayedTasks = tasks.slice(0, 5); 
 
-  return (
-    <div className="dashboard">
-      <aside className="sidebar">
-        <h2>Taakie</h2>
-        <nav>
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li>Tasks</li>
-            <li>Review & Statistics</li>
-            <li>Documents</li>
-            <li>Settings</li>
-          </ul>
-        </nav>
-        <button onClick={handleAddTask} className="cta-button">Add Task</button>
-      </aside>
+    const handleAddTask = () => {
+        setOverlayType("add");
+        setTaskTitle("");
+        setTaskCompleted(false);
+        setIsOverlayOpen(true);
+    };
 
-      <main className="main-content">
-        <header className="dashboard-header">
-          <h1>Welcome Back!</h1>
-          <p>Your tasks overview at a glance.</p>
-        </header>
-        <div className="task-overview">
-          <div className="task-card red">{tasks.filter(task => task.status === 'Completed').length} Completed Tasks</div>
-          <div className="task-card orange">{tasks.filter(task => task.status === 'Open').length} Open Tasks</div>
-          <div className="task-card green">{tasks.filter(task => task.status === 'Ongoing').length} Ongoing Tasks</div>
+    const handleUpdateTask = (task) => {
+        setOverlayType("update");
+        setTaskToEdit(task);
+        setTaskTitle(task.title);
+        setTaskCompleted(task.completed);
+        setIsOverlayOpen(true);
+    };
+
+    const handleSaveTask = () => {
+        if (overlayType === "add") {
+            const newTask = {
+                title: taskTitle,
+                completed: taskCompleted,
+            };
+            dispatch(addTaskAPI(newTask));
+        } else if (overlayType === "update") {
+            const updatedTask = {
+                ...taskToEdit,
+                title: taskTitle,
+                completed: taskCompleted,
+            };
+            dispatch(updateTaskAPI(updatedTask));
+        }
+        setIsOverlayOpen(false);
+    };
+
+    return (
+        <div className="dashboard">
+            <aside className="sidebar">
+                <h2>Taakie</h2>
+                <nav>
+                    <ul>
+                        <li><Link to="/">Home</Link></li>
+                        <li>Tasks</li>
+                        <li>Review & Statistics</li>
+                        <li>Documents</li>
+                        <li>Settings</li>
+                    </ul>
+                </nav>
+                <button onClick={handleAddTask} className="cta-button">Add Task</button>
+            </aside>
+
+            <main className="main-content">
+                <header className="dashboard-header">
+                    <h1>Welcome Back!</h1>
+                    <p>Your tasks overview at a glance.</p>
+                </header>
+
+                {loading && <p>Loading tasks...</p>}
+                {error && <p>Error: {error}</p>}
+
+                <div className="task-overview">
+                    <div className="task-card red">
+                        {displayedTasks.filter((task) => task.completed).length} Completed Tasks
+                    </div>
+                    <div className="task-card orange">
+                        {displayedTasks.filter((task) => !task.completed).length} Pending Tasks
+                    </div>
+                </div>
+
+
+                <section className="tasks">
+                    <h2>Tasks Overview</h2>
+                    <div className="tasks-list">
+                        <ul>
+                            {displayedTasks.map((task) => (
+                                <li key={task.id} className="task-item">
+                                    {task.title} | Status: {task.completed ? "Completed" : "Pending"}
+                                    <div className="task-buttons">
+                                        <button
+                                            onClick={() => handleUpdateTask(task)}
+                                            className="update-button"
+                                        >
+                                            Update
+                                        </button>
+                                        <button
+                                            onClick={() => dispatch(deleteTaskAPI(task.id))}
+                                            className="delete-button"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </section>
+            </main>
+
+            {isOverlayOpen && (
+                <div className="overlay">
+                    <div className="overlay-content">
+                        <h2>{overlayType === "add" ? "Add Task" : "Update Task"}</h2>
+                        <input
+                            type="text"
+                            value={taskTitle}
+                            onChange={(e) => setTaskTitle(e.target.value)}
+                            placeholder="Task Title"
+                            className="input-field"
+                        />
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={taskCompleted}
+                                onChange={(e) => setTaskCompleted(e.target.checked)}
+                            />
+                            Completed
+                        </label>
+                        <button onClick={handleSaveTask} className="cta-button">Save</button>
+                        <button onClick={() => setIsOverlayOpen(false)} className="cancel-button">Cancel</button>
+                    </div>
+                </div>
+            )}
         </div>
-        <section className="tasks">
-          <h2>Tasks Overview</h2>
-          <div className="tasks-list">
-            <ul>
-              {tasks.map((task) => (
-                <li key={task.id} className="task-item">
-                  {task.name} | Status: {task.status}
-                  <div className="task-buttons">
-                    <button onClick={() => handleUpdateTask(task)} className="update-button">Update</button>
-                    <button onClick={() => dispatch(deleteTask(task.id))} className="delete-button">Delete</button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      </main>
-
-      {isOverlayOpen && (
-        <div className="overlay">
-          <div className="overlay-content">
-            <h2>{overlayType === "add" ? "Add Task" : "Update Task"}</h2>
-            <input
-              type="text"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
-              placeholder="Task Name"
-              className="input-field"
-            />
-            <input
-              type="text"
-              value={taskStatus}
-              onChange={(e) => setTaskStatus(e.target.value)}
-              placeholder="Task Status (Completed, Open, Ongoing)"
-              className="input-field"
-            />
-            <button onClick={handleSaveTask} className="cta-button">
-              Save
-            </button>
-            <button onClick={() => setIsOverlayOpen(false)} className="cancel-button">
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    );
 }
 
 export default Dashboard;
