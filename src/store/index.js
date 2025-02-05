@@ -1,4 +1,3 @@
-/* Redux - store.js */
 import { configureStore } from "@reduxjs/toolkit";
 import tasksReducer from "../reducers/tasksSlice";
 

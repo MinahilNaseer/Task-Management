@@ -8,6 +8,7 @@ function LandingPage() {
       <nav className="landing-nav">
         <div className="logo">
           <img src="/logo.png" alt="Logo" className="logo-image" />
+          <h1>Taakie</h1>
         </div>
         <ul className="nav-links">
           <li>Home</li>
