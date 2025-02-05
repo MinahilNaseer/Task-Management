@@ -11,7 +11,7 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  const [overlayType, setOverlayType] = useState(""); // 'add' or 'update'
+  const [overlayType, setOverlayType] = useState(""); 
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [taskName, setTaskName] = useState("");
   const [taskStatus, setTaskStatus] = useState("");
@@ -34,7 +34,7 @@ function Dashboard() {
   const handleSaveTask = () => {
     if (overlayType === "add") {
       const newTask = {
-        id: tasks.length + 1, // Simple unique ID generation
+        id: tasks.length + 1, 
         name: taskName,
         status: taskStatus,
       };

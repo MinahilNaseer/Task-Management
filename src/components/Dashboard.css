@@ -1,4 +1,4 @@
-/* Dashboard.css */
+
 .dashboard {
     display: flex;
     background-color: #f5f9ff;
@@ -119,8 +119,8 @@
   }
   
   .tasks-list {
-    max-height: 300px; /* Set max height */
-    overflow-y: auto; /* Make it scrollable */
+    max-height: 300px; 
+    overflow-y: auto; 
     margin-top: 1rem;
   }
   
@@ -136,7 +136,7 @@
   }
   .task-buttons {
     display: flex;
-    gap: 0.5rem; /* Space between buttons */
+    gap: 0.5rem; 
   }
   .overlay {
     position: fixed;

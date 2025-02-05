@@ -1,4 +1,4 @@
-/* Redux - tasksSlice.js */
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const tasksSlice = createSlice({
