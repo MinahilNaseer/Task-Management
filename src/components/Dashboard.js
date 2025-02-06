@@ -22,6 +22,8 @@ function Dashboard() {
     const [taskTitle, setTaskTitle] = useState("");
     const [taskCompleted, setTaskCompleted] = useState(false);
 
+    const [sidebarOpen, setSidebarOpen] = useState(false); 
+
     useEffect(() => {
         dispatch(fetchTasks());
     }, [dispatch]);
@@ -62,8 +64,14 @@ function Dashboard() {
     };
 
     return (
-        <div className="dashboard">
-            <aside className="sidebar">
+        <div className={`dashboard ${sidebarOpen ? "sidebar-open" : ""}`}>
+            <div className="hamburger-menu" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
+            <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
                 <h2>Taakie</h2>
                 <nav>
                     <ul>
